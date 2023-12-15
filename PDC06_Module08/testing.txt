@@ -1,0 +1,358 @@
+﻿Mainpage cs
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Xamarin.Forms;
+
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
+
+namespace PDC06_Module08
+{
+    public class Post
+    { 
+        public int ID { get; set; } 
+        public string username { get; set; }
+        public string password { get; set; }
+    
+    }
+
+    public partial class MainPage : ContentPage
+    {
+        public const string url = "http://192.168.100.253/pdc6/api_create.php";
+        public const string url_retrieve = "http://192.168.100.253/pdc6/api_r2.php";
+
+        private HttpClient _Client = new HttpClient();
+        private ObservableCollection<Post> _post;
+
+
+        public MainPage()
+        {
+            InitializeComponent();
+        }
+
+        private async void OpenPageSearch(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new SearchPage());
+        }
+        private async void OnAdd(object sender, System.EventArgs e) 
+        {
+            Post post = new Post { username = xUsername.Text, password = xPassword.Text };
+
+            var content = JsonConvert.SerializeObject(post);
+
+            await _Client.PostAsync(url, new StringContent(content, Encoding.UTF8, "application/json"));
+
+            _post.Insert(0, post);
+
+
+            var content2 = await _Client.GetStringAsync(url_retrieve);
+            var post2 = JsonConvert.DeserializeObject<List<Post>>(content2);
+
+            _post = new ObservableCollection<Post>(post2);
+            Post_List.ItemsSource = _post;
+            base.OnAppearing();
+
+        }
+
+        protected override async void OnAppearing()
+        {
+            var content = await _Client.GetStringAsync(url_retrieve);
+            var post = JsonConvert.DeserializeObject<List<Post>>(content);
+
+            _post = new ObservableCollection<Post>(post);
+            Post_List.ItemsSource = _post;
+            base.OnAppearing();
+
+        }
+
+        private async void OnRefresh(object sender, System.EventArgs e)
+        {
+            var content = await _Client.GetStringAsync(url_retrieve);
+            var post = JsonConvert.DeserializeObject<List<Post>>(content);
+
+            _post = new ObservableCollection<Post>(post);
+            Post_List.ItemsSource = _post;
+            base.OnAppearing();
+        }
+
+        
+
+    }
+}
+//
+
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PDC06_Module08.MainPage">
+
+    <StackLayout>
+        <Button Text="Add Records" Clicked="OnAdd"></Button>
+        <Button Text="Refresh" Clicked="OnRefresh"></Button>
+        <Button Text="Search" Clicked="OpenPageSearch"></Button>
+
+        <!--Old-->
+        <!--<Entry x:Name="xUsername" Placeholder="Username"></Entry>
+        <Entry x:Name="xPassword" Placeholder="Password"></Entry>
+        <ListView x:Name="Post_List">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding ID}" Detail="{Binding username}"></TextCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>-->
+
+        <Entry x:Name="xName" Placeholder="Name"></Entry>
+        <DatePicker x:Name="xBirthday" Format="D" Date="{Binding birthday}" />
+        <Entry x:Name="xGender" Placeholder="Gender"></Entry>
+        <Entry x:Name="xEmail" Placeholder="Email"></Entry>
+        <Entry x:Name="xPhone" Placeholder="Phone"></Entry>
+        <Entry x:Name="xAddress" Placeholder="Address"></Entry>
+        <Entry x:Name="xUsername" Placeholder="Username"></Entry>
+        <Entry x:Name="xPassword" Placeholder="Password"></Entry>
+
+        <ListView x:Name="Post_List">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding ID}" Detail="{Binding username}"></TextCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+    
+
+</ContentPage>
+
+// WOWKING MAIN PAGE
+
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PDC06_Module08.MainPage">
+
+    <StackLayout>
+        <StackLayout Orientation="Horizontal">
+            <Button Text="Add Records" Clicked="OnAdd" HorizontalOptions="FillAndExpand"/>
+            <Button Text="Refresh" Clicked="OnRefresh" HorizontalOptions="FillAndExpand"/>
+            <Button Text="Search" Clicked="OpenPageSearch" HorizontalOptions="FillAndExpand"/>
+        </StackLayout>
+
+
+
+
+        <StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Entry x:Name="xName" Placeholder="Name" HorizontalOptions="FillAndExpand" WidthRequest="200"></Entry>
+                <Entry x:Name="xGender" Placeholder="Gender" HorizontalOptions="FillAndExpand" WidthRequest="100"></Entry>
+            </StackLayout>
+
+            <StackLayout Orientation="Horizontal">
+                <Entry x:Name="xEmail" Placeholder="Email" HorizontalOptions="FillAndExpand" WidthRequest="200"></Entry>
+                <Entry x:Name="xPhone" Placeholder="Phone" HorizontalOptions="FillAndExpand" WidthRequest="100"></Entry>
+            </StackLayout>
+
+            <Entry x:Name="xAddress" Placeholder="Address" HorizontalOptions="FillAndExpand"></Entry>
+
+            <StackLayout Orientation="Horizontal">
+                <Entry x:Name="xUsername" Placeholder="Username" HorizontalOptions="FillAndExpand" WidthRequest="100"></Entry>
+                <Entry x:Name="xPassword" Placeholder="Password" HorizontalOptions="FillAndExpand" WidthRequest="200"></Entry>
+            </StackLayout>
+        </StackLayout>
+
+        <CollectionView x:Name="Post_Collection">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout>
+                        <!-- Your existing item template here -->
+                        <StackLayout Padding="10" >
+                            <Label Text="{Binding ID}" FontAttributes="Bold" TextColor="Black" />
+                            <Label Text="{Binding name}" TextColor="Black" />
+                            <Label Text="{Binding gender}" TextColor="Black" />
+                            <Label Text="{Binding email}" TextColor="Black" />
+                            <Label Text="{Binding phone}" TextColor="Black" />
+                            <Label Text="{Binding address}" TextColor="Black" />
+                            <Label Text="{Binding username}" TextColor="Black" />
+                            <!-- Add more labels for other fields as needed -->
+                        </StackLayout>
+
+                        <!-- Divider -->
+                        <BoxView HeightRequest="1" Color="Gray" HorizontalOptions="FillAndExpand" Margin="10,0" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+
+
+</ContentPage>
+//
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Xamarin.Forms;
+
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
+
+namespace PDC06_Module08
+{
+    public class Post
+    {
+        public int ID { get; set; }
+        public string name { get; set; }
+        public string gender { get; set; }
+        public string email { get; set; }
+        public string phone { get; set; }
+        public string address { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public string section { get; set; }
+
+    }
+
+
+    public partial class MainPage : ContentPage
+    {
+        public const string url = "http://192.168.100.253/pdc6/api_create.php";
+        public const string url_retrieve = "http://192.168.100.253/pdc6/api_r2.php";
+
+        private HttpClient _Client = new HttpClient();
+        private ObservableCollection<Post> _post;
+
+        private Picker xSectionPicker; // Added field for Picker
+
+        public MainPage()
+        {
+            InitializeComponent();
+
+            // Initialize Picker
+            xSectionPicker = new Picker
+            {
+                Title = "Select Section",
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                BackgroundColor = Color.FromHex("#ecf0f1")
+            };
+
+            // Add items to Picker
+            xSectionPicker.ItemsSource = new List<string> { "Section A", "Section B", "Section C" };
+
+            // Attach event handler for selected index change
+            xSectionPicker.SelectedIndexChanged += OnSectionPickerSelectedIndexChanged;
+
+            // Add Picker to the existing StackLayout or other layout
+            mainStackLayout.Children.Add(xSectionPicker); // Replace 'mainStackLayout' with your actual layout name
+        }
+
+        private void OnSectionPickerSelectedIndexChanged(object sender, EventArgs e)
+        {
+            var picker = (Picker)sender;
+            var selectedSection = (string)picker.SelectedItem;
+
+        }
+
+
+        private async void OpenPageSearch(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new SearchPage());
+        }
+        private async void OnAdd(object sender, EventArgs e)
+        {
+            Post post = new Post
+            {
+                name = xName.Text,
+                gender = xGender.Text,
+                email = xEmail.Text,
+                phone = xPhone.Text,
+                address = xAddress.Text,
+                username = xUsername.Text,
+                password = xPassword.Text,
+                section = xSectionPicker.SelectedItem as string
+            };
+
+            var content = JsonConvert.SerializeObject(post);
+
+            // Send the data to your API and check for success
+            var response = await _Client.PostAsync(url, new StringContent(content, Encoding.UTF8, "application/json"));
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Successfully added record, show alert
+                await DisplayAlert("Success", "Record added successfully", "OK");
+
+                // Clear the entry fields
+                xName.Text = "";
+                xGender.Text = "";
+                xEmail.Text = "";
+                xPhone.Text = "";
+                xAddress.Text = "";
+                xUsername.Text = "";
+                xPassword.Text = "";
+
+                _post.Insert(0, post);
+
+                var content2 = await _Client.GetStringAsync(url_retrieve);
+                var post2 = JsonConvert.DeserializeObject<List<Post>>(content2);
+
+                _post = new ObservableCollection<Post>(post2);
+                Post_Collection.ItemsSource = _post;
+            }
+            else
+            {
+                // Failed to add record, show error message
+                await DisplayAlert("Error", "Failed to add record", "OK");
+            }
+        }
+
+
+
+
+        protected override async void OnAppearing()
+        {
+            var content = await _Client.GetStringAsync(url_retrieve);
+            var post = JsonConvert.DeserializeObject<List<Post>>(content);
+
+            _post = new ObservableCollection<Post>(post);
+            Post_Collection.ItemsSource = _post; // Update to use Post_Collection instead of Post_List
+            base.OnAppearing();
+        }
+
+        private async void OnRefresh(object sender, System.EventArgs e)
+        {
+            var content = await _Client.GetStringAsync(url_retrieve);
+            var post = JsonConvert.DeserializeObject<List<Post>>(content);
+
+            _post = new ObservableCollection<Post>(post);
+            Post_Collection.ItemsSource = _post; // Update to use Post_Collection instead of Post_List
+            base.OnAppearing();
+        }
+
+        private bool isAscending = true;
+
+        private void OnSortClicked(object sender, EventArgs e)
+        {
+            // Toggle the sorting order
+            isAscending = !isAscending;
+
+            // Sort the collection based on ID
+            var sortedCollection = isAscending
+                ? _post.OrderBy(post => post.ID).ToList()
+                : _post.OrderByDescending(post => post.ID).ToList();
+
+            // Update the collection and refresh the UI
+            _post = new ObservableCollection<Post>(sortedCollection);
+            Post_Collection.ItemsSource = _post;
+        }
+
+    }
+}

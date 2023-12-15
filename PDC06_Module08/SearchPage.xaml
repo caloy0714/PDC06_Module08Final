@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PDC06_Module08.SearchPage"
+         >
+    <ContentPage.Content>
+        
+     
+        <StackLayout>
+            <Entry x:Name="xSearchBar" Placeholder="Search" TextChanged="OnSearchTextchanged"></Entry>
+
+            <StackLayout>
+          
+                <ListView x:Name="Post_list2">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <!--<TextCell Text="{Binding ID}" Detail="{Binding username}"></TextCell>-->
+                            <ViewCell>
+                                <ViewCell.ContextActions>
+                                    <MenuItem Clicked="OnMore" CommandParameter="{Binding ID}" Text="More" />
+                         
+                                    <MenuItem Clicked="OnDelete" CommandParameter="{Binding ID}" Text="Delete" IsDestructive="True" />
+                                </ViewCell.ContextActions>
+
+                                <StackLayout Padding="15,0">
+                                    <Label Text="{Binding ID}" />
+                                    <!--<Label Text="{Binding username}" />-->
+                                    <Label Text="{Binding password}" />
+                                </StackLayout>
+
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+            </StackLayout> 
+
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
