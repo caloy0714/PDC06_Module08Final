@@ -356,3 +356,521 @@ namespace PDC06_Module08
 
     }
 }
+
+// search
+
+
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+using Newtonsoft.Json;
+
+using System.Net.Http;
+
+using System.Collections.ObjectModel;
+using System.Security.Cryptography;
+using System.ComponentModel;
+using System.Globalization;
+
+namespace PDC06_Module08
+{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public class Post2
+    {
+        public int ID { get; set; }
+        public string name { get; set; }
+        public string gender { get; set; }
+        public string email { get; set; }
+        public string phone { get; set; }
+        public string address { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public string section { get; set; }
+
+    }
+
+
+
+    public partial class SearchPage : ContentPage
+    {
+        private const string url_search = "http://192.168.100.253/pdc6/api-search.php";
+        private const string url_delete = "http://192.168.100.253/pdc6/api-delete.php";
+        private HttpClient _Client = new HttpClient();
+        private ObservableCollection<Post2> _posts;
+        public SearchPage()
+        {
+            InitializeComponent();
+        }
+        public async void OnMore(object sender, EventArgs e)
+        {
+          try
+            {
+                var mi = (MenuItem)sender;
+
+                // Check if CommandParameter is an integer (System.Int32)
+                if (mi.CommandParameter is int postId)
+                {
+                    bool result = await DisplayAlert("Update Context Action",
+                        $"Are you sure you want to update ID No: {postId}?",
+                        "OK", "CANCEL");
+
+                    if (result)
+                    {
+
+                        Post2 post = new Post2 { ID = postId };
+                        await Navigation.PushAsync(new UpdatePage(post));
+
+                    }
+                    else
+                    {
+                        // User clicked CANCEL, handle accordingly (if needed)
+                    }
+                }
+                else
+                {
+                    // Log the unexpected type
+                    var unexpectedType = mi.CommandParameter?.GetType().ToString();
+                    Console.WriteLine($"Unexpected type in OnDelete: {unexpectedType}");
+
+                    // Handle the case where the data context is not of the expected type
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or display the exception details
+                Console.WriteLine($"Exception in OnDelete: {ex.Message}");
+            }
+
+        }
+
+        public async void OnDelete(object sender, EventArgs e)
+        {
+            try
+            {
+                var mi = (MenuItem)sender;
+
+                // Check if CommandParameter is an integer (System.Int32)
+                if (mi.CommandParameter is int postId)
+                {
+                    bool result = await DisplayAlert("Delete Context Action",
+                        $"Are you sure you want to delete ID No: {postId}?",
+                        "OK", "CANCEL");
+
+                    if (result)
+                    {
+                        Post2 post = new Post2 { ID = postId };
+
+                        var content = JsonConvert.SerializeObject(post);
+                        await _Client.PostAsync(url_delete, new StringContent(content, Encoding.UTF8, "application/json"));
+
+                        await DisplayAlert("Success", $"Post with ID No: {postId} deleted successfully.", "OK");
+                         // Handle any additional actions after deletion if needed
+                    }
+                    else
+                    {
+                        // User clicked CANCEL, handle accordingly (if needed)
+                    }
+                }
+                else
+                {
+                    // Log the unexpected type
+                    var unexpectedType = mi.CommandParameter?.GetType().ToString();
+                    Console.WriteLine($"Unexpected type in OnDelete: {unexpectedType}");
+                    // Handle the case where the data context is not of the expected type
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or display the exception details
+                Console.WriteLine($"Exception in OnDelete: {ex.Message}");
+            }
+        }
+
+        public class ResponseObject
+        {
+            public bool status { get; set;}
+            public JToken data { get; set; }
+            public string message { get; set;}
+        }
+        private async void OnSearchTextchanged (object sender, TextChangedEventArgs e)
+        {
+            string searchQuery = e.NewTextValue;
+            if (string.IsNullOrWhiteSpace(searchQuery)) 
+            { 
+            
+            }
+            else
+            {
+                try
+                {
+
+                    var searchUrl = $"{url_search}?username={searchQuery}";
+
+                    System.Diagnostics.Debug.WriteLine($"Search URL: {searchUrl}");
+
+                    var content = await _Client.GetStringAsync(searchUrl);
+
+                    var responseObject = JsonConvert.DeserializeObject<ResponseObject>(content);
+
+                    if(responseObject.status)
+                    {
+                        var searchResult = JsonConvert.DeserializeObject<List<Post2>>(responseObject.data.ToString());
+
+                        _posts = new ObservableCollection<Post2>(searchResult);
+                        Post_list2.ItemsSource = _posts;
+                     }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error: {responseObject.message}");
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    System.Diagnostics.Debug.WriteLine($"An error occured: {ex.Message}");
+                }
+            }
+
+        }
+    }
+}
+// search cs
+
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+using Newtonsoft.Json;
+
+using System.Net.Http;
+
+using System.Collections.ObjectModel;
+using System.Security.Cryptography;
+using System.ComponentModel;
+using System.Globalization;
+
+namespace PDC06_Module08
+{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public class Post2
+    {
+        public int ID { get; set; }
+        public string name { get; set; }
+        public string gender { get; set; }
+        public string email { get; set; }
+        public string phone { get; set; }
+        public string address { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public string section { get; set; }
+
+    }
+
+
+
+    public partial class SearchPage : ContentPage
+    {
+        private const string url_search = "http://192.168.100.253/pdc6/api-search.php";
+        private const string url_delete = "http://192.168.100.253/pdc6/api-delete.php";
+        private HttpClient _Client = new HttpClient();
+        private ObservableCollection<Post2> _posts;
+        public SearchPage()
+        {
+            InitializeComponent();
+        }
+        public async void OnMore(object sender, EventArgs e)
+        {
+          try
+            {
+                var mi = (MenuItem)sender;
+
+                // Check if CommandParameter is an integer (System.Int32)
+                if (mi.CommandParameter is int postId)
+                {
+                    bool result = await DisplayAlert("Update Context Action",
+                        $"Are you sure you want to update ID No: {postId}?",
+                        "OK", "CANCEL");
+
+                    if (result)
+                    {
+
+                        Post2 post = new Post2 { ID = postId };
+                        await Navigation.PushAsync(new UpdatePage(post));
+
+                    }
+                    else
+                    {
+                        // User clicked CANCEL, handle accordingly (if needed)
+                    }
+                }
+                else
+                {
+                    // Log the unexpected type
+                    var unexpectedType = mi.CommandParameter?.GetType().ToString();
+                    Console.WriteLine($"Unexpected type in OnDelete: {unexpectedType}");
+
+                    // Handle the case where the data context is not of the expected type
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or display the exception details
+                Console.WriteLine($"Exception in OnDelete: {ex.Message}");
+            }
+
+        }
+
+        public async void OnDelete(object sender, EventArgs e)
+        {
+            try
+            {
+                var mi = (MenuItem)sender;
+
+                // Check if CommandParameter is an integer (System.Int32)
+                if (mi.CommandParameter is int postId)
+                {
+                    bool result = await DisplayAlert("Delete Context Action",
+                        $"Are you sure you want to delete ID No: {postId}?",
+                        "OK", "CANCEL");
+
+                    if (result)
+                    {
+                        Post2 post = new Post2 { ID = postId };
+
+                        var content = JsonConvert.SerializeObject(post);
+                        await _Client.PostAsync(url_delete, new StringContent(content, Encoding.UTF8, "application/json"));
+
+                        await DisplayAlert("Success", $"Post with ID No: {postId} deleted successfully.", "OK");
+                         // Handle any additional actions after deletion if needed
+                    }
+                    else
+                    {
+                        // User clicked CANCEL, handle accordingly (if needed)
+                    }
+                }
+                else
+                {
+                    // Log the unexpected type
+                    var unexpectedType = mi.CommandParameter?.GetType().ToString();
+                    Console.WriteLine($"Unexpected type in OnDelete: {unexpectedType}");
+                    // Handle the case where the data context is not of the expected type
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or display the exception details
+                Console.WriteLine($"Exception in OnDelete: {ex.Message}");
+            }
+        }
+
+        public class ResponseObject
+        {
+            public bool status { get; set;}
+            public JToken data { get; set; }
+            public string message { get; set;}
+        }
+        private async void OnSearchTextchanged (object sender, TextChangedEventArgs e)
+        {
+            string searchQuery = e.NewTextValue;
+            if (string.IsNullOrWhiteSpace(searchQuery)) 
+            { 
+            
+            }
+            else
+            {
+                try
+                {
+
+                    var searchUrl = $"{url_search}?username={searchQuery}";
+
+                    System.Diagnostics.Debug.WriteLine($"Search URL: {searchUrl}");
+
+                    var content = await _Client.GetStringAsync(searchUrl);
+
+                    var responseObject = JsonConvert.DeserializeObject<ResponseObject>(content);
+
+                    if(responseObject.status)
+                    {
+                        var searchResult = JsonConvert.DeserializeObject<List<Post2>>(responseObject.data.ToString());
+
+                        _posts = new ObservableCollection<Post2>(searchResult);
+                        Post_list2.ItemsSource = _posts;
+                     }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error: {responseObject.message}");
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    System.Diagnostics.Debug.WriteLine($"An error occured: {ex.Message}");
+                }
+            }
+
+        }
+    }
+}
+//update
+
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+using static PDC06_Module08.SearchPage;
+
+namespace PDC06_Module08
+{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+
+
+    public partial class UpdatePage : ContentPage
+    {
+
+        private const string url_search = "http://192.168.100.253/pdc6/api-searchID.php";
+        private const string url_update = "http://192.168.100.253/pdc6/api-update.php";
+
+        private HttpClient _Client = new HttpClient();
+        private ObservableCollection<Post2> _posts = new ObservableCollection<Post2>();
+        public UpdatePage(Post2 post)
+        {
+            InitializeComponent();
+            xID.Text = post.ID.ToString();
+                   
+        }
+
+
+        private async void OnUpdate(object sender, EventArgs e)
+        {
+            bool result = await DisplayAlert("Update Confirmation",
+                $"Are you sure you want to update ID No: {xID.Text}?",
+                "OK", "CANCEL");
+
+            if (result)
+            {
+                await UpdatePostAsync();
+            }
+            else
+            {
+                // User clicked CANCEL, handle accordingly (if needed)
+            }
+        }
+
+        private async Task UpdatePostAsync()
+        {
+            try
+            {
+                Post2 post = new Post2
+                {
+                    ID = int.Parse(xID.Text),
+                    username = xUsername.Text,
+                    password = xPassword.Text
+                };
+
+                var content = JsonConvert.SerializeObject(post);
+
+                var response = await _Client.PostAsync(url_update, new StringContent(content, Encoding.UTF8, "application/json"));
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Provide user feedback on successful update
+                    await DisplayAlert("Success", "Post updated successfully", "OK");
+                }
+                else
+                {
+                    // Provide user feedback on unsuccessful update
+                    await DisplayAlert("Error", $"Failed to update post. Status code: {response.StatusCode}", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
+            }
+        }
+        private async void OnRetrievedchanged(object sender, TextChangedEventArgs e)
+        {
+            string searchQuery = e.NewTextValue;
+
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+                
+                xUsername.Text = string.Empty;
+                xPassword.Text = string.Empty;
+            }
+            else
+            {
+                try
+                {
+                
+                    var searchUrl = $"{url_search}?ID={searchQuery}";
+
+                    System.Diagnostics.Debug.WriteLine($"Search URL: {searchUrl}");
+
+                    
+                    var content = await _Client.GetStringAsync(searchUrl);
+
+             
+                    var responseObject = JsonConvert.DeserializeObject<ResponseObject>(content);
+
+                    if (responseObject.status)
+                    {
+                        
+                        var searchResults = JsonConvert.DeserializeObject<List<Post2>>(responseObject.data.ToString());
+
+
+                        if (searchResults.Count > 0)
+                        {
+ 
+                            var firstResult = searchResults[0];
+
+
+                            xUsername.Text = firstResult.username;
+                            xPassword.Text = firstResult.password;
+                        }
+                        else
+                        {
+                            xUsername.Text = "No results found";
+                            xPassword.Text = string.Empty;
+                        }
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error: {responseObject.message}");
+                        xUsername.Text = $"Error: {responseObject.message}";
+                        xPassword.Text = string.Empty;
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"An error occurred: {ex.Message}");
+                    xUsername.Text = $"An error occurred: {ex.Message}";
+                    xPassword.Text = string.Empty;
+                }
+            }
+        }
+
+
+
+
+    }
+}

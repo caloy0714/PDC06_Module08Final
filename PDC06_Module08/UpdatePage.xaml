@@ -3,14 +3,46 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PDC06_Module08.UpdatePage">
     <ContentPage.Content>
-        <StackLayout>
-      
-       
-            <Entry x:Name="xID" TextChanged="OnRetrievedchanged" IsReadOnly="True"></Entry>
-            <Entry x:Name="xUsername" ></Entry>
-            <Entry x:Name="xPassword" ></Entry>
-            
-            <Button Clicked="OnUpdate" Text="Update"/>
+        <ScrollView>
+        <StackLayout Padding="15">
+            <Image Source="logoOnly.png" 
+                    WidthRequest="100"   
+                    HeightRequest="300">
+            </Image>
+
+
+            <Label Text="ID:" FontAttributes="Bold" />
+            <Entry x:Name="xID" IsReadOnly="True" TextChanged="OnRetrievedchanged" />
+
+            <Label Text="Name:" FontAttributes="Bold" />
+            <Entry x:Name="xName" />
+
+            <Label Text="Gender:" FontAttributes="Bold" />
+            <Entry x:Name="xGender" />
+
+            <Label Text="Email:" FontAttributes="Bold" />
+            <Entry x:Name="xEmail" />
+
+            <Label Text="Phone:" FontAttributes="Bold" />
+            <Entry x:Name="xPhone" />
+
+            <Label Text="Address:" FontAttributes="Bold" />
+            <Entry x:Name="xAddress" />
+
+            <Label Text="Username:" FontAttributes="Bold" />
+            <Entry x:Name="xUsername" />
+
+            <Label Text="Password:" FontAttributes="Bold" />
+            <Entry x:Name="xPassword" />
+
+            <Label Text="Section:" FontAttributes="Bold" />
+            <Entry x:Name="xSection" />
+
+
+
+            <Button Text="Update" Clicked="OnUpdate" HorizontalOptions="FillAndExpand" BackgroundColor="#3498db" TextColor="White"/>
         </StackLayout>
+        </ScrollView>
     </ContentPage.Content>
+    
 </ContentPage>

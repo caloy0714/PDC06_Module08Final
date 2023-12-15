@@ -14,20 +14,32 @@
                 <ListView x:Name="Post_list2">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <!--<TextCell Text="{Binding ID}" Detail="{Binding username}"></TextCell>-->
+                            
                             <ViewCell>
                                 <ViewCell.ContextActions>
-                                    <MenuItem Clicked="OnMore" CommandParameter="{Binding ID}" Text="More" />
+                                    <MenuItem Clicked="OnMore" CommandParameter="{Binding ID}" Text="Update" />
                          
                                     <MenuItem Clicked="OnDelete" CommandParameter="{Binding ID}" Text="Delete" IsDestructive="True" />
                                 </ViewCell.ContextActions>
 
                                 <StackLayout Padding="15,0">
-                                    <Label Text="{Binding ID}" />
-                                    <!--<Label Text="{Binding username}" />-->
-                                    <Label Text="{Binding password}" />
+                                    <Label TextColor="Black">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Name: " FontAttributes="Bold" />
+                                                <Span Text="{Binding username}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label TextColor="Black">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Section: " FontAttributes="Bold" />
+                                                <Span Text="{Binding section}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
                                 </StackLayout>
-
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>

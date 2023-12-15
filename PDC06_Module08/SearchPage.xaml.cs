@@ -22,9 +22,14 @@ namespace PDC06_Module08
     public class Post2
     {
         public int ID { get; set; }
+        public string name { get; set; }
+        public string gender { get; set; }
+        public string email { get; set; }
+        public string phone { get; set; }
+        public string address { get; set; }
         public string username { get; set; }
-
         public string password { get; set; }
+        public string section { get; set; }
 
     }
 
@@ -42,7 +47,7 @@ namespace PDC06_Module08
         }
         public async void OnMore(object sender, EventArgs e)
         {
-          try
+            try
             {
                 var mi = (MenuItem)sender;
 
@@ -59,7 +64,6 @@ namespace PDC06_Module08
                         Post2 post = new Post2 { ID = postId };
                         await Navigation.PushAsync(new UpdatePage(post));
 
-                       // Handle any additional actions after deletion if needed
                     }
                     else
                     {
@@ -104,7 +108,7 @@ namespace PDC06_Module08
                         await _Client.PostAsync(url_delete, new StringContent(content, Encoding.UTF8, "application/json"));
 
                         await DisplayAlert("Success", $"Post with ID No: {postId} deleted successfully.", "OK");
-                         // Handle any additional actions after deletion if needed
+                        // Handle any additional actions after deletion if needed
                     }
                     else
                     {
@@ -128,16 +132,16 @@ namespace PDC06_Module08
 
         public class ResponseObject
         {
-            public bool status { get; set;}
+            public bool status { get; set; }
             public JToken data { get; set; }
-            public string message { get; set;}
+            public string message { get; set; }
         }
-        private async void OnSearchTextchanged (object sender, TextChangedEventArgs e)
+        private async void OnSearchTextchanged(object sender, TextChangedEventArgs e)
         {
             string searchQuery = e.NewTextValue;
-            if (string.IsNullOrWhiteSpace(searchQuery)) 
-            { 
-            
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+
             }
             else
             {
@@ -152,13 +156,13 @@ namespace PDC06_Module08
 
                     var responseObject = JsonConvert.DeserializeObject<ResponseObject>(content);
 
-                    if(responseObject.status)
+                    if (responseObject.status)
                     {
                         var searchResult = JsonConvert.DeserializeObject<List<Post2>>(responseObject.data.ToString());
 
                         _posts = new ObservableCollection<Post2>(searchResult);
                         Post_list2.ItemsSource = _posts;
-                     }
+                    }
                     else
                     {
                         System.Diagnostics.Debug.WriteLine($"Error: {responseObject.message}");

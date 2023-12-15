@@ -26,6 +26,7 @@ namespace PDC06_Module08
         public string password { get; set; }
         public string section { get; set; }
 
+
     }
 
 
@@ -50,16 +51,16 @@ namespace PDC06_Module08
                 BackgroundColor = Color.FromHex("#ecf0f1")
             };
 
-            // Add items to Picker
+           
             xSectionPicker.ItemsSource = new List<string> { "All Sections", "A", "B", "C" };
 
-            // Attach event handler for selected index change
+            
             xSectionPicker.SelectedIndexChanged += OnSectionPickerSelectedIndexChanged;
 
-            // Add Picker to the existing StackLayout or other layout
+            
             mainStackLayout.Children.Insert(0, xSectionPicker);
 
-            // Fetch initial records
+            
             FetchAndDisplayRecords();
         }
 
@@ -74,7 +75,7 @@ namespace PDC06_Module08
 
         private void OnSectionPickerSelectedIndexChanged(object sender, EventArgs e)
         {
-            // Handle the section filter change here
+            
             FilterRecordsBySection(xSectionPicker.SelectedItem as string);
         }
 
@@ -82,12 +83,12 @@ namespace PDC06_Module08
         {
             if (selectedSection == "All Sections")
             {
-                // Show all records
+                
                 Post_Collection.ItemsSource = _post;
             }
             else
             {
-                // Filter records based on the selected section
+               
                 var filteredRecords = _post.Where(post => post.section == selectedSection).ToList();
                 Post_Collection.ItemsSource = new ObservableCollection<Post>(filteredRecords);
             }
@@ -115,7 +116,7 @@ namespace PDC06_Module08
 
             var content = JsonConvert.SerializeObject(post);
 
-            // Send the data to your API and check for success
+            
             var response = await _Client.PostAsync(url, new StringContent(content, Encoding.UTF8, "application/json"));
 
             if (response.IsSuccessStatusCode)
@@ -123,7 +124,7 @@ namespace PDC06_Module08
                 // Successfully added record, show alert
                 await DisplayAlert("Success", "Record added successfully", "OK");
 
-                // Clear the entry fields
+                
                 xName.Text = "";
                 xGender.Text = "";
                 xEmail.Text = "";
@@ -148,16 +149,13 @@ namespace PDC06_Module08
             }
         }
 
-
-
-
         protected override async void OnAppearing()
         {
             var content = await _Client.GetStringAsync(url_retrieve);
             var post = JsonConvert.DeserializeObject<List<Post>>(content);
 
             _post = new ObservableCollection<Post>(post);
-            Post_Collection.ItemsSource = _post; // Update to use Post_Collection instead of Post_List
+            Post_Collection.ItemsSource = _post; 
             base.OnAppearing();
         }
 
@@ -167,7 +165,7 @@ namespace PDC06_Module08
             var post = JsonConvert.DeserializeObject<List<Post>>(content);
 
             _post = new ObservableCollection<Post>(post);
-            Post_Collection.ItemsSource = _post; // Update to use Post_Collection instead of Post_List
+            Post_Collection.ItemsSource = _post;
             base.OnAppearing();
         }
 
@@ -175,39 +173,39 @@ namespace PDC06_Module08
 
         private void OnSortClicked(object sender, EventArgs e)
         {
-            // Toggle the sorting order
+
             isAscending = !isAscending;
 
-            // Sort the collection based on ID
+            
             var sortedCollection = isAscending
                 ? _post.OrderBy(post => post.ID).ToList()
                 : _post.OrderByDescending(post => post.ID).ToList();
 
-            // Update the collection and refresh the UI
+            
             _post = new ObservableCollection<Post>(sortedCollection);
             Post_Collection.ItemsSource = _post;
         }
 
         private void OnSectionTextChanged(object sender, TextChangedEventArgs e)
         {
-            // Get the current text from the Entry
+            
             string newText = e.NewTextValue;
 
-            // Validate the input to allow only A, B, or C
+            
             if (!IsValidSectionInput(newText))
             {
-                // If the input is not valid, set the Entry text to an empty string
+                
                 xSection.Text = "";
             }
         }
 
         private bool IsValidSectionInput(string input)
         {
-            // Define the valid options
+            
             List<string> validOptions = new List<string> { "A", "B", "C" };
 
-            // Check if the input is one of the valid options
-            return validOptions.Contains(input.ToUpper()); // Convert to uppercase for case-insensitive check
+            
+            return validOptions.Contains(input.ToUpper()); 
         }
 
 

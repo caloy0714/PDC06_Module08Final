@@ -3,14 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PDC06_Module08.LoginPage">
     <ContentPage.Content>
-        <StackLayout>
-            
-            <Entry x:Name="xUsername" ></Entry>
-            <Entry x:Name="xPassword" ></Entry>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+           
+            <!-- Logo or Image -->
+            <Image Source="ethosLogo" VerticalOptions="CenterAndExpand" HorizontalOptions="Center">
+                <Image.Aspect>AspectFit</Image.Aspect>
+            </Image>
+            <!-- Login Form -->
+            <StackLayout Grid.Row="1" Padding="20">
+                <Entry x:Name="xUsername" Placeholder="Username" />
+                <Entry x:Name="xPassword" Placeholder="Password" IsPassword="True" />
 
-            <Button Clicked="OnLogin" Text="Login"/>
-            <!--<Button Clicked="OnOpen" Text="Signout"/>-->
+                <Button Clicked="OnLogin" Text="Login" BackgroundColor="#3498db" TextColor="White" />
 
-        </StackLayout>
+            </StackLayout>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
+
